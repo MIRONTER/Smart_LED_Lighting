@@ -10,6 +10,7 @@ SoftwareSerial bluetooth(8,7);
 byte maxBrightness = 128;
 byte ledEffect = 9;
 boolean autoSwitch = 1;
+boolean enableStaticEffects = 0;
 long changePeriod = 300000;
 CRGB ledStrip[LED_STRIP_LENGTH];
 unsigned long lastChange;
@@ -38,7 +39,8 @@ void setup() {
 
 void loop() {
   if (millis() - lastChange > changePeriod && autoSwitch) {
-    ledEffect = random(0, 23);
+    if (enableStaticEffects) ledEffect = random(0, 16);
+      else ledEffect = random(0, 25);
     changeEffect(ledEffect);
     lastChange = millis();
   }

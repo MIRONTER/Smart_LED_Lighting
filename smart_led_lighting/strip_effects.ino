@@ -31,7 +31,7 @@ void twoColorsSpinning() {
   if (safeDelay(currentEffectDelay)) return;
 }
 
-void threeColorsSpinning() {
+void threeColorsSpinning() { //todo refactor
   ledIndex++;
   int ghue = (currentStripHue + 80) % 255;
   int bhue = (currentStripHue + 160) % 255;
