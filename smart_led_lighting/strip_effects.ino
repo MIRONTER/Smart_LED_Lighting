@@ -31,20 +31,19 @@ void twoColorsSpinning() {
   if (safeDelay(currentEffectDelay)) return;
 }
 
-void threeColorsSpinning() { //todo refactor
+void threeColorsSpinning() {
   ledIndex++;
-  int ghue = (currentStripHue + 80) % 255;
-  int bhue = (currentStripHue + 160) % 255;
-  int N3  = int(LED_STRIP_LENGTH / 3);
-  int N6  = int(LED_STRIP_LENGTH / 6);
-  int N12 = int(LED_STRIP_LENGTH / 12);
-  for (int i = 0; i < N3; i++) {
-    int j0 = (ledIndex + i + LED_STRIP_LENGTH - N12) % LED_STRIP_LENGTH;
-    int j1 = (j0 + N3) % LED_STRIP_LENGTH;
-    int j2 = (j1 + N3) % LED_STRIP_LENGTH;
-    ledStrip[j0] = CHSV(currentStripHue, 255, 255);
-    ledStrip[j1] = CHSV(ghue, 255, 255);
-    ledStrip[j2] = CHSV(bhue, 255, 255);
+  int secondHue = (currentStripHue + 80) % 255;
+  int thirdHue = (currentStripHue + 160) % 255;
+  int third  = int(LED_STRIP_LENGTH / 3);
+  int twelfth = int(LED_STRIP_LENGTH / 12);
+  for (int i = 0; i < third; i++) {
+    int firstSector = (ledIndex + i + LED_STRIP_LENGTH - twelfth) % LED_STRIP_LENGTH;
+    int secondSector = (firstSector + third) % LED_STRIP_LENGTH;
+    int thirdSector = (secondSector + third) % LED_STRIP_LENGTH;
+    ledStrip[firstSector] = CHSV(currentStripHue, 255, 255);
+    ledStrip[secondSector] = CHSV(secondHue, 255, 255);
+    ledStrip[thirdSector] = CHSV(thirdHue, 255, 255);
   }
   FastLED.show();
   if (safeDelay(currentEffectDelay)) return;
