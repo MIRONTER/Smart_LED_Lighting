@@ -23,7 +23,7 @@ void parseCommand(String command) {
   }
   if (command.startsWith("c")){
     command.remove(0, 1);
-    changePeriod = command.toInt()*1000;
+    changePeriodMilliseconds = command.toInt()*1000;
     lastChange = millis();
   }
 }

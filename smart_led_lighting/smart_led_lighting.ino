@@ -11,7 +11,7 @@ byte maxBrightness = 128;
 byte ledEffect = 9;
 boolean autoSwitch = 1;
 boolean enableStaticEffects = 0;
-long changePeriod = 300000;
+long changePeriodMilliseconds = 300000;
 CRGB ledStrip[LED_STRIP_LENGTH];
 unsigned long lastChange;
 
@@ -38,9 +38,12 @@ void setup() {
 }
 
 void loop() {
-  if (millis() - lastChange > changePeriod && autoSwitch) {
-    if (enableStaticEffects) ledEffect = random(0, 16);
-      else ledEffect = random(0, 25);
+  if (millis() - lastChange > changePeriodMilliseconds && autoSwitch) {
+    if (enableStaticEffects) {
+      ledEffect = random(0, 25);
+    } else {
+      ledEffect = random(0, 16);
+    }
     changeEffect(ledEffect);
     lastChange = millis();
   }
