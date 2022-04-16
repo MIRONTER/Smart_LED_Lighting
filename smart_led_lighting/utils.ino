@@ -1,3 +1,13 @@
+void buttonClick() {
+  if (millis() - buttonAntiBounceTimer > 150) {
+    buttonAntiBounceTimer = millis();
+    ledEffect++;
+    if (ledEffect > 24) ledEffect = 1;
+    changeEffect(ledEffect);
+    changeFlag = 1;
+  }
+}
+
 void setPixel(int i, byte red, byte green, byte blue) {
   ledStrip[i].r = red;
   ledStrip[i].g = green;
@@ -35,11 +45,11 @@ boolean safeDelay(int delTime) {
   uint32_t thisTime = millis();
   while (millis() - thisTime <= delTime) {
     if (changeFlag) {
-      changeFlag = false;
-      return true;
+      changeFlag = 0;
+      return 1;
     }
   }
-  return false;
+  return 0;
 }
 
 int getAntipodalLedIndex(int index) {

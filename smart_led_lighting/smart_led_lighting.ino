@@ -3,14 +3,19 @@
 
 #define LED_STRIP_LENGTH 148
 #define STRIP_CONTROL_PIN 13
+#define BLUETOOTH_RX_PIN 8
+#define BLUETOOTH_TX_PIN 7
+#define BUTTON_PIN 2
 #define IS_BLUETOOTH_ENABLED 0
+#define IS_BUTTON_ENABLED 0
 
-SoftwareSerial bluetooth(8,7);
+SoftwareSerial bluetooth(BLUETOOTH_RX_PIN, BLUETOOTH_TX_PIN);
+volatile unsigned long buttonAntiBounceTimer;
 
 byte maxBrightness = 128;
 byte ledEffect = 9;
 boolean autoSwitch = 1;
-boolean enableStaticEffects = 0;
+boolean enableAutoStaticEffects = 0;
 long changePeriodMilliseconds = 300000;
 CRGB ledStrip[LED_STRIP_LENGTH];
 unsigned long lastChange;
@@ -35,11 +40,15 @@ void setup() {
   changeEffect(ledEffect);
   Serial.begin(9600);
   if (IS_BLUETOOTH_ENABLED) bluetooth.begin(9600);
+  if (IS_BUTTON_ENABLED) {
+    pinMode(BUTTON_PIN, INPUT_PULLUP);
+    attachInterrupt(0, buttonClick, FALLING);
+  }
 }
 
 void loop() {
   if (millis() - lastChange > changePeriodMilliseconds && autoSwitch) {
-    if (enableStaticEffects) {
+    if (enableAutoStaticEffects) {
       ledEffect = random(0, 25);
     } else {
       ledEffect = random(0, 16);

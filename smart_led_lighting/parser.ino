@@ -19,7 +19,7 @@ void parseCommand(String command) {
   }
   if (command.startsWith("s")) {
     command.remove(0, 1);
-    enableStaticEffects = command.toInt();
+    enableAutoStaticEffects = command.toInt();
   }
   if (command.startsWith("c")){
     command.remove(0, 1);
