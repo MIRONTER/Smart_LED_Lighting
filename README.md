@@ -1,51 +1,30 @@
-# Эффекты для адресной ленты
-12.12.2018 исправлен код для поддержки свежими версиями IDE
-04.04.2019 добавлена прошивка со сменой эффектов кнопкой
+# Smart LED lighting
+This repository contains everything necessary to create an Arduino controlled lighting with address LED strip. Based on [FastSPI LED effects by teldredge](http://funkboxing.com/wordpress/?p=1366), [Tweaking4all article](https://www.tweaking4all.com/hardware/arduino/adruino-led-strip-effects) and [AlexGyver refactoring work<sup>[RU]<sup/>](https://alexgyver.ru/ws2812b-fx/). Includes more refactoring, Bluetooth control, better COM-port control, excluded effects that I didn't like on my table and photoresistor. I've done this mostly for myself, but feel free to fork and edit as you wish!
 
-## Папки
+## Project structure
+- **FastLED-stm32patch** - library to control the WS2812 and similar address LED strips
+- **smart_led_lighting** - Arduino sketch
+  - *smart_led_lighting.ino* - main file, which contains all the global variables, constants, loop and setup methods
+  - *effect_handler.ino* - this file contains methods for changing effects with the LED strip settings and performing them
+  - *parser.ino* - there is a parsing method that receives a command from serial port and transforms it into action
+  - *strip_effects.ino* - this file contains all the effect methods
+  - *utils.ino* - this file contains service methods just to keep code shorter and cleaner
+- **scheme.jpg** - here is a scheme of the device, which represents how to connect everything to an Arduino (in my case, Nano)
+- **README.md** - the file you're reading right now :D
 
-**FastLED** - библиотека для дисплея, установить в C:\Program Files\Arduino\libraries (для 64 разрядных Windows C:\Program Files(x86)\Arduino\libraries)
-  
-**WS2812_FX** - прошивка для просмотра режимов и эффектов
+There's also a mobile control app in development. It will be published soon, so stay tuned!
 
-**WS2812_FX_rndChange_light** - прошивка со случайной сменой режимов и адаптивной подсветкой
+## Few words about memory
+I am using and Arduino Nano, which has 30720 KB of available flash memory and 2 KB of SRAM. Here is a table of memory consumption with certain features enabled or disabled.
 
-## Схема
-![СХЕМА](https://github.com/AlexGyver/WS2812_FX/blob/master/scheme.jpg)
+|                           | Flash       | SRAM       |
+|---------------------------|-------------|------------|
+| No Bluetooth<br>No button | 12888 bytes | 1332 bytes |
+| Bluetooth<br>No button    | 13374 bytes | 1332 bytes |
+| No Bluetooth<br>Button    | 13182 bytes | 1336 bytes |
+| Bluetooth<br>Button       | 13668 bytes | 1336 bytes |
 
-##  Материалы и компоненты
-Всё указанное ниже можно найти здесь
-http://alexgyver.ru/arduino_shop/
+There are 148 LEDs in my strip. One LED consumes 6 bytes of SRAM.
 
-* Arduino NANO 328p – искать
-* https://ali.ski/KePE9
-* https://ali.ski/IDYZQ
-* https://ali.ski/2v_KZ
-* https://ali.ski/C3xNl
-* Адресная лента
-* https://ali.ski/jfFbn_
-* https://ali.ski/tx7JlA
-* Купить в РФ, 60 свет/метр, 30 свет/метр
-* Black PCB / White PCB – цвет подложки ленты, чёрная / белая. В видео была чёрная
-* 1m/5m – длина ленты в метрах (чтобы заказать 2 метра, берите два заказа 1m, очевидно)
-* 30/60/74/96/100/144 – количество светодиодов на 1 метр ленты. В видео использовалась лента 60 диодов на метр
-* IP30 лента без влагозащиты (как на видео)
-* IP65 лента покрыта силиконом
-* IP67 лента полностью в силиконовом коробе
-* Постфикс ECO – лента чуть более низкого качества, меньше меди, на длинной ленте будет сильно проседать яркость
-* Крутой гибкий профиль! https://ali.ski/Ttwe6
-* БП 5V (мощные)
-* Giant4 60W
-* Giant4 100W
-* БП 5V Али искать (минимум 3A на каждые 100 LED)
-* https://ali.ski/KFvzA
-* https://ali.ski/KwLMQ
-* Мощные https://ali.ski/hVVRGQ
-* Мощные https://ali.ski/pZSMm
-
-## Вам также пригодится 
-* Всё для пайки http://alexgyver.ru/all-for-soldering/
-* Электронные компоненты http://alexgyver.ru/electronics/
-
-## HOW TO
-* Загрузка прошивки http://alexgyver.ru/arduino-first/
+## Scheme
+![SCHEME](https://github.com/chapsan2001/smart_led_lighting/blob/master/scheme.jpg)
