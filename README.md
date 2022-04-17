@@ -27,4 +27,4 @@ I am using and Arduino Nano, which has 30720 KB of available flash memory and 2 
 There are 148 LEDs in my strip. One LED consumes 6 bytes of SRAM.
 
 ## Scheme
-![SCHEME](https://github.com/chapsan2001/smart_led_lighting/blob/master/scheme.jpg)
+![SCHEME](https://github.com/chapsan2001/smart_led_lighting/blob/master/scheme.png)
