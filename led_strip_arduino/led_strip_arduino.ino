@@ -49,22 +49,25 @@ void setup() {
 void loop() {
   if (millis() - lastChange > changePeriodMilliseconds && autoSwitch) {
     if (enableAutoStaticEffects) {
-      ledEffect = random(0, 25);
+      ledEffect = random(0, 21);
     } else {
-      ledEffect = random(0, 16);
+      ledEffect = random(0, 12);
     }
     changeEffect(ledEffect);
     lastChange = millis();
   }
+  
   if (Serial.available() > 0) {
     String command = Serial.readString();
     Serial.flush();
     parseCommand(command);
   }
+  
   if (IS_BLUETOOTH_ENABLED && bluetooth.available() > 0) {
     String command = bluetooth.readString();
     bluetooth.flush();
     parseCommand(command);
   }
+  
   performEffect();
 }

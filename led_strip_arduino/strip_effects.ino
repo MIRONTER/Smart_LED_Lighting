@@ -139,23 +139,6 @@ void brightnessWave() {
   }
 }
 
-void strobe() {
-  for (int j = 0; j < 10; j++) {
-    setAll(currentRed, currentGreen, currentBlue);
-    FastLED.show();
-    delay(20);
-    setAll(0, 0, 0);
-    FastLED.show();
-    delay(20);
-  }
-  delay(500);
-}
-
-void randomStrobe() {
-  setRandomColor();
-  strobe();
-}
-
 void flicker() {
   int randomBrightness = random(0, 255);
   int randomDelay = random(10, 100);

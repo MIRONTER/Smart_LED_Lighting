@@ -10,11 +10,8 @@ void performEffect() {
     case 8: colorWipe(); break;
     case 9: rainbowWave(); break;
     case 10: brightnessWave(); break;
-    case 11: strobe(); break;
-    case 12: strobe(); break;
-    case 13: randomStrobe(); break;
-    case 14: flicker(); break;
-    case 15: glow(); break;
+    case 11: flicker(); break;
+    case 12: glow(); break;
   }
 }
 
@@ -35,16 +32,16 @@ void changeEffect(int newEffect) {
     case 8: currentEffectDelay = 20; break;
     case 9: currentEffectDelay = 0; break;
     case 10: currentEffectDelay = 10; break;
-    case 11: currentRed = 255; currentGreen = 255; currentBlue = 255; break;
-    case 15: currentEffectDelay = 85; break;
-    case 16: fillStrip(255, 255, 255); break;
-    case 17: fillStrip(255, 0, 0); break;
-    case 18: fillStrip(0, 255, 0); break;
-    case 19: fillStrip(0, 0, 255); break;
-    case 20: fillStrip(255, 255, 0); break;
-    case 21: fillStrip(0, 255, 255); break;
-    case 22: fillStrip(255, 0, 255); break;
-    case 23: fillStrip(255, 0, 128); break;
-    case 24: fillStrip(255, 128, 0); break;
+    case 11: break;
+    case 12: currentEffectDelay = 85; break;
+    case 13: fillStrip(255, 255, 255); break;
+    case 14: fillStrip(255, 0, 0); break;
+    case 15: fillStrip(0, 255, 0); break;
+    case 16: fillStrip(0, 0, 255); break;
+    case 17: fillStrip(255, 255, 0); break;
+    case 18: fillStrip(0, 255, 255); break;
+    case 19: fillStrip(255, 0, 255); break;
+    case 20: fillStrip(255, 0, 128); break;
+    case 21: fillStrip(255, 128, 0); break;
   }
 }
