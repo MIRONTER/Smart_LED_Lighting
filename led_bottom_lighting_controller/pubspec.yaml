@@ -1,0 +1,51 @@
+name: led_bottom_lighting_controller
+description: This app allows you to control my car's bottom lighting.
+publish_to: 'none'
+version: 1.0.0+1
+environment:
+  sdk: ">=2.7.0 <3.0.0"
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.0
+  flutter_bluetooth_serial: ^0.2.2
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+flutter:
+  assets:
+    - assets/images/automatic.gif
+    - assets/images/color_brightness_pulse.gif
+    - assets/images/color_multipulse.gif
+    - assets/images/color_saturation_pulse.gif
+    - assets/images/color_wipe.gif
+    - assets/images/rainbow_fade.gif
+    - assets/images/random_pixels_all_leds.gif
+    - assets/images/random_pixels_some_leds.gif
+    - assets/images/random_strip.gif
+    - assets/images/segmented_pulse.gif
+    - assets/images/spinning_rainbow.gif
+    - assets/images/static_aqua.gif
+    - assets/images/static_blue.gif
+    - assets/images/static_green.gif
+    - assets/images/static_lime.gif
+    - assets/images/static_pink.gif
+    - assets/images/static_purple.gif
+    - assets/images/static_red.gif
+    - assets/images/static_white.gif
+    - assets/images/static_yellow.gif
+    - assets/images/three_colors_spinning.gif
+    - assets/images/two_colors_spinning.gif
+    - assets/images/two_overlaps.gif
+  uses-material-design: true
+  fonts:
+    - family: Ubuntu
+      fonts:
+        - asset: assets/fonts/Ubuntu-Bold.ttf
+        - asset: assets/fonts/Ubuntu-BoldItalic.ttf
+        - asset: assets/fonts/Ubuntu-Italic.ttf
+        - asset: assets/fonts/Ubuntu-Light.ttf
+        - asset: assets/fonts/Ubuntu-LightItalic.ttf
+        - asset: assets/fonts/Ubuntu-Medium.ttf
+        - asset: assets/fonts/Ubuntu-MediumItalic.ttf
+        - asset: assets/fonts/Ubuntu-Regular.ttf
