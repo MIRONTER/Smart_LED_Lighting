@@ -1,10 +1,10 @@
 import 'package:led_strip_controller/feature/home_screen/light_mode.dart';
-import 'package:led_strip_controller/util/bt_controller.dart';
+import 'package:led_strip_controller/util/serial_controller.dart';
 
-extension StripSettings on BluetoothController{
+extension StripSettings on SerialController {
   void changeBrightness(int brightness) => sendCommand('b$brightness');
 
-  void changeChangePeriod(int period) => sendCommand('c$period');
+  void changePeriod(int period) => sendCommand('c$period');
 
   void changeMode(LightMode mode) => sendCommand('m${mode.getCode()}');
 

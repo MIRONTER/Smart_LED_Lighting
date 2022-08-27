@@ -1,6 +1,6 @@
 import 'package:led_strip_controller/feature/home_screen/effect_card.dart';
 import 'package:led_strip_controller/feature/home_screen/light_mode.dart';
-import 'package:led_strip_controller/util/bt_controller.dart';
+import 'package:led_strip_controller/util/serial_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:led_strip_controller/resource/text_styles.dart';
 import 'package:led_strip_controller/util/strip_settings.dart';
@@ -17,24 +17,26 @@ class _HomeScreenState extends State<HomeScreen> {
   int _brightness = 128;
   int _changePeriodSeconds = 300;
   LightMode _currentMode = LightMode.rainbowWave;
-  BluetoothController _bluetoothController = BluetoothController();
+  SerialController _serialController = SerialController.choose(SerialControllers.usb);
 
   @override
   void initState() {
     super.initState();
-    _bluetoothController.connect();
+    _serialController.connect();
+    _serialController.isConnected.addListener(_backToDefaultMode);
   }
 
   @override
   void dispose() {
-    _bluetoothController.disconnect();
+    _serialController.disconnect();
+    _serialController.isConnected.removeListener(_backToDefaultMode);
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
-      valueListenable: _bluetoothController.isConnected,
+      valueListenable: _serialController.isConnected,
       builder: (_, bool isConnected, __) {
         return Scaffold(
           appBar: AppBar(
@@ -42,10 +44,17 @@ class _HomeScreenState extends State<HomeScreen> {
             actions: [
               IconButton(
                 icon: Icon(
-                    Icons.bluetooth,
-                    color: isConnected ? Colors.green : Colors.red
+                  Icons.bluetooth,
+                  color: (isConnected && _serialController is BluetoothController) ? Colors.green : Colors.red
                 ),
-                onPressed: _bluetoothController.toggleConnection,
+                onPressed: _toggleBluetooth,
+              ),
+              IconButton(
+                icon: Icon(
+                  Icons.usb,
+                  color: (isConnected && _serialController is UsbController) ? Colors.green : Colors.red
+                ),
+                onPressed: _toggleUsb,
               ),
             ],
           ),
@@ -82,7 +91,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           min: 0, max: 255,
                           value: _brightness.toDouble(),
                           onChanged: isConnected ? _changeBrightness : null,
-                          onChangeEnd: isConnected ? (value) => _bluetoothController.changeBrightness(value.toInt()) : null,
+                          onChangeEnd: isConnected ? (value) => _serialController.changeBrightness(value.toInt()) : null,
                           activeColor: Colors.red,
                           inactiveColor: Color(0xFF484848),
                         ),
@@ -101,7 +110,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           min: 0, max: 600,
                           value: _changePeriodSeconds.toDouble(),
                           onChanged: isConnected ? (value) => setState(() => _changePeriodSeconds = value.toInt()) : null,
-                          onChangeEnd: isConnected ? (value) => _bluetoothController.changeChangePeriod(value.toInt()) : null,
+                          onChangeEnd: isConnected ? (value) => _serialController.changePeriod(value.toInt()) : null,
                           activeColor: Colors.red,
                           inactiveColor: Color(0xFF484848),
                         ),
@@ -167,7 +176,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _selectEffect(LightMode mode) {
-    _bluetoothController.changeMode(mode);
+    _serialController.changeMode(mode);
     setState(() {
       _currentMode = mode;
       _autoSwitch = false;
@@ -186,19 +195,47 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _toggleStrip(bool isOn) async {
-    if (!_bluetoothController.isConnected.value) await _bluetoothController.connect();
+    if (!_serialController.isConnected.value) await _serialController.connect();
     setState(() => _ledStripOn = isOn);
     if (_brightness == 0) _brightness = 128;
-    _bluetoothController.changeBrightness(isOn ? _brightness : 0);
+    _serialController.changeBrightness(isOn ? _brightness : 0);
   }
 
   void _toggleStaticEffects(bool isOn) {
     setState(() => _staticEffects = isOn);
-    _bluetoothController.toggleStaticEffects(isOn);
+    _serialController.toggleStaticEffects(isOn);
   }
 
   void _toggleAutoSwitch(bool isOn) {
     setState(() => _autoSwitch = isOn);
-    _bluetoothController.toggleAutoSwitch(isOn);
+    _serialController.toggleAutoSwitch(isOn);
+  }
+
+  void _toggleBluetooth() async {
+    if (_serialController is BluetoothController) {
+      _serialController.toggleConnection();
+    } else {
+      _serialController.disconnect();
+      _serialController.isConnected.removeListener(_backToDefaultMode);
+      _serialController = SerialController.choose(SerialControllers.bluetooth);
+      _serialController.isConnected.addListener(_backToDefaultMode);
+      await _serialController.connect();
+    }
+  }
+
+  void _toggleUsb() async {
+    if (_serialController is UsbController) {
+      _serialController.toggleConnection();
+    } else {
+      _serialController.disconnect();
+      _serialController.isConnected.removeListener(_backToDefaultMode);
+      _serialController = SerialController.choose(SerialControllers.usb);
+      _serialController.isConnected.addListener(_backToDefaultMode);
+      await _serialController.connect();
+    }
+  }
+
+  void _backToDefaultMode() {
+    if (!_serialController.isConnected.value) _currentMode = LightMode.rainbowWave;
   }
 }
