@@ -15,7 +15,7 @@ This repository contains everything necessary to create an Arduino controlled li
 There's also a mobile control app in development. It will be published soon, so stay tuned!
 
 ## Few words about memory
-I am using and Arduino Nano, which has 30720 KB of available flash memory and 2 KB of SRAM. Here is a table of memory consumption with certain features enabled or disabled.
+I am using an Arduino Nano, which has 30720 KB of available flash memory and 2 KB of SRAM. Here is a table of memory consumption with certain features enabled or disabled.
 
 |                           | Flash       | SRAM       |
 |---------------------------|-------------|------------|
