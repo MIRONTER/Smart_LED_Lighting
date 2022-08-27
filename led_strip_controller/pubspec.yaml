@@ -1,0 +1,36 @@
+name: led_strip_controller
+description: This app allows you to control my smart LED Strip.
+
+publish_to: 'none'
+
+version: 2.0.0+1
+
+environment:
+  sdk: ">=2.17.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_bluetooth_serial: 0.4.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+
+  fonts:
+    - family: Ubuntu
+      fonts:
+        - asset: assets/fonts/Ubuntu-Bold.ttf
+        - asset: assets/fonts/Ubuntu-BoldItalic.ttf
+        - asset: assets/fonts/Ubuntu-Italic.ttf
+        - asset: assets/fonts/Ubuntu-Light.ttf
+        - asset: assets/fonts/Ubuntu-LightItalic.ttf
+        - asset: assets/fonts/Ubuntu-Medium.ttf
+        - asset: assets/fonts/Ubuntu-MediumItalic.ttf
+        - asset: assets/fonts/Ubuntu-Regular.ttf
