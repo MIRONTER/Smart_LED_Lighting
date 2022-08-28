@@ -1,9 +1,9 @@
 void buttonClick() {
   if (millis() - buttonAntiBounceTimer > 150) {
     buttonAntiBounceTimer = millis();
-    ledEffect++;
-    if (ledEffect > 21) ledEffect = 1;
-    changeEffect(ledEffect);
+    currentLightMode++;
+    if (currentLightMode > 21) currentLightMode = 1;
+    changeLightMode(currentLightMode);
     lastChange = millis();
     changeFlag = 1;
   }

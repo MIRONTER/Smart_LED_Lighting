@@ -14,7 +14,7 @@ void parseCommand(String command) {
   if (command.startsWith("m")) {
     command.remove(0, 1);
     autoSwitch = 0;
-    changeEffect(command.toInt());
+    changeLightMode(command.toInt());
   }
   
   if (command.startsWith("a")) {

@@ -13,7 +13,7 @@ SoftwareSerial bluetooth(BLUETOOTH_RX_PIN, BLUETOOTH_TX_PIN);
 volatile unsigned long buttonAntiBounceTimer;
 
 byte maxBrightness = 128;
-byte ledEffect = 9;
+byte currentLightMode = 1;
 boolean autoSwitch = 1;
 boolean enableAutoStaticEffects = 0;
 long changePeriodMilliseconds = 300000;
@@ -37,7 +37,7 @@ void setup() {
   FastLED.addLeds<WS2811, STRIP_CONTROL_PIN, GRB>(ledStrip, LED_STRIP_LENGTH);
   FastLED.show();
   randomSeed(analogRead(0));
-  changeEffect(ledEffect);
+  changeLightMode(currentLightMode);
   Serial.begin(9600);
   if (IS_BLUETOOTH_ENABLED) bluetooth.begin(9600);
   if (IS_BUTTON_ENABLED) {
@@ -49,11 +49,11 @@ void setup() {
 void loop() {
   if (millis() - lastChange > changePeriodMilliseconds && autoSwitch) {
     if (enableAutoStaticEffects) {
-      ledEffect = random(0, 21);
+      currentLightMode = random(0, 21);
     } else {
-      ledEffect = random(0, 12);
+      currentLightMode = random(0, 12);
     }
-    changeEffect(ledEffect);
+    changeLightMode(currentLightMode);
     lastChange = millis();
   }
   
