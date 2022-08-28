@@ -1,9 +1,9 @@
 enum LightMode {
   rainbowWave,
   rainbowFade,
-  randomLedChangeColor,
-  twoColorsSpinning,
-  threeColorsSpinning,
+  sparkle,
+  doublePropeller,
+  triplePropeller,
   brightnessPulse,
   saturationPulse,
   randomStream,

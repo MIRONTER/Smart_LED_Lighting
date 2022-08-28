@@ -10,7 +10,7 @@ void rainbowFade() {
   if (safeDelay(currentEffectDelay)) return;
 }
 
-void randomLedChangeColor() {
+void sparkle() {
   ledIndex = random(0, LED_STRIP_LENGTH);
   ledHue = random(0, 255);
   ledStrip[ledIndex] = CHSV(ledHue, 255, 255);
@@ -18,7 +18,7 @@ void randomLedChangeColor() {
   if (safeDelay(currentEffectDelay)) return;
 }
 
-void twoColorsSpinning() {
+void doublePropeller() {
   ledIndex++;
   if (ledIndex >= LED_STRIP_LENGTH) {
     ledIndex = 0;
@@ -31,7 +31,7 @@ void twoColorsSpinning() {
   if (safeDelay(currentEffectDelay)) return;
 }
 
-void threeColorsSpinning() {
+void triplePropeller() {
   ledIndex++;
   int secondHue = (currentStripHue + 80) % 255;
   int thirdHue = (currentStripHue + 160) % 255;

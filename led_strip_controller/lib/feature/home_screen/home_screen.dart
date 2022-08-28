@@ -15,7 +15,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   bool _ledStripOn = true;
-  bool _autoSwitch = false;
+  bool _autoSwitch = true;
   bool _staticEffects = false;
   int _brightness = 128;
   int _changePeriodSeconds = 300;
@@ -101,6 +101,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const Text('Brightness', style: TextStyles.regular),
                               Text('$_brightness/255', style: TextStyles.regular),
@@ -120,13 +121,14 @@ class _HomeScreenState extends State<HomeScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const Text('Change period', style: TextStyles.regular),
                               Text('$_changePeriodSeconds seconds', style: TextStyles.regular),
                             ],
                           ),
                           Slider(
-                            min: 0, max: 600,
+                            min: 30, max: 600,
                             value: _changePeriodSeconds.toDouble(),
                             onChanged: isConnected ? (value) => setState(() => _changePeriodSeconds = value.toInt()) : null,
                             onChangeEnd: isConnected ? (value) => _serialController.changePeriod(value.toInt()) : null,
@@ -279,6 +281,10 @@ class _HomeScreenState extends State<HomeScreen> {
     } else {
       _showSnackBar('${_serialController is UsbController ? 'USB' : 'Bluetooth'} disconnected');
       _currentMode = LightMode.rainbowWave;
+      _brightness = 128;
+      _changePeriodSeconds = 300;
+      _autoSwitch = true;
+      _staticEffects = false;
     }
   }
 

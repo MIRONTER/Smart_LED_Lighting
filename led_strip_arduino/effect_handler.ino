@@ -2,9 +2,9 @@ void performEffect() {
   switch (currentLightMode) {
     case 1: rainbowWave(); break;
     case 2: rainbowFade(); break;
-    case 3: randomLedChangeColor(); break;
-    case 4: twoColorsSpinning(); break;
-    case 5: threeColorsSpinning(); break;
+    case 3: sparkle(); break;
+    case 4: doublePropeller(); break;
+    case 5: triplePropeller(); break;
     case 6: brightnessPulse(); break;
     case 7: saturationPulse(); break;
     case 8: randomStream(); break;
