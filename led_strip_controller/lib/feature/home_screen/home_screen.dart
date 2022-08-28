@@ -29,13 +29,13 @@ class _HomeScreenState extends State<HomeScreen> {
     var controllerType = Memory().getPrimaryController() ?? Memory().getLastController() ?? SerialControllers.usb;
     _serialController = SerialController.choose(controllerType);
     _serialController.connect();
-    _serialController.isConnected.addListener(_backToDefaultMode);
+    _serialController.isConnected.addListener(_connectionListener);
   }
 
   @override
   void dispose() {
     _serialController.disconnect();
-    _serialController.isConnected.removeListener(_backToDefaultMode);
+    _serialController.isConnected.removeListener(_connectionListener);
     super.dispose();
   }
 
@@ -250,36 +250,35 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     }
     if (_serialController is BluetoothController) {
-      _showSnackBar('Bluetooth ${_serialController.isConnected.value ? 'dis' : ''}connected');
       _serialController.toggleConnection();
     } else {
-      if (_serialController.isConnected.value) _showSnackBar('USB disconnected');
       _serialController.disconnect();
-      _serialController.isConnected.removeListener(_backToDefaultMode);
+      _serialController.isConnected.removeListener(_connectionListener);
       _serialController = SerialController.choose(SerialControllers.bluetooth);
-      _serialController.isConnected.addListener(_backToDefaultMode);
+      _serialController.isConnected.addListener(_connectionListener);
       await _serialController.connect();
-      _showSnackBar('Bluetooth connected');
     }
   }
 
   void _toggleUsb() async {
     if (_serialController is UsbController) {
-      _showSnackBar('USB ${_serialController.isConnected.value ? 'dis' : ''}connected');
       _serialController.toggleConnection();
     } else {
-      if (_serialController.isConnected.value) _showSnackBar('Bluetooth disconnected');
       _serialController.disconnect();
-      _serialController.isConnected.removeListener(_backToDefaultMode);
+      _serialController.isConnected.removeListener(_connectionListener);
       _serialController = SerialController.choose(SerialControllers.usb);
-      _serialController.isConnected.addListener(_backToDefaultMode);
+      _serialController.isConnected.addListener(_connectionListener);
       await _serialController.connect();
-      _showSnackBar('USB connected');
     }
   }
 
-  void _backToDefaultMode() {
-    if (!_serialController.isConnected.value) _currentMode = LightMode.rainbowWave;
+  void _connectionListener() {
+    if (_serialController.isConnected.value) {
+      _showSnackBar('${_serialController is UsbController ? 'USB' : 'Bluetooth'} connected');
+    } else {
+      _showSnackBar('${_serialController is UsbController ? 'USB' : 'Bluetooth'} disconnected');
+      _currentMode = LightMode.rainbowWave;
+    }
   }
 
   void _setPrimaryController(SerialControllers controller) {
@@ -297,11 +296,12 @@ class _HomeScreenState extends State<HomeScreen> {
       Memory().removePrimaryController();
       _showSnackBar('Removed primary controller');
     } else {
-      _showSnackBar('There already is no primary controller');
+      _showSnackBar('There is already no primary controller');
     }
   }
 
   void _showSnackBar(String message) {
+    ScaffoldMessenger.of(_scaffoldKey.currentContext!).hideCurrentSnackBar();
     ScaffoldMessenger.of(_scaffoldKey.currentContext!).showSnackBar(
       SnackBar(
         content: Text(message, style: TextStyles.regular),
