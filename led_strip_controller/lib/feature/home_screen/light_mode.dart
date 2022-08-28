@@ -25,7 +25,7 @@ enum LightMode {
 extension LightModeData on LightMode {
   int getCode() => LightMode.values.indexOf(this) + 1;
 
-  String getAsset() => 'assets/images/${_getWords().join('_').toLowerCase()}.gif';
+  String getAsset() => 'assets/images/${_getWords().join('_').toLowerCase()}.${_getWords().contains('static') ? 'png' : 'gif'}';
 
   String getDisplayName() {
     var name = _getWords().join(' ');
