@@ -15,6 +15,7 @@ class Memory {
   Future<void> init() async => _prefs = await SharedPreferences.getInstance();
 
   Future<void> setLastBluetoothMac(String mac) => _prefs.setString(_lastBluetoothMacKey, mac);
+  Future<bool> removeLastBluetoothMac() => _prefs.remove(_lastBluetoothMacKey);
   String? getLastBluetoothMac() => _prefs.getString(_lastBluetoothMacKey);
 
   Future<void> setLastController(SerialControllers controller) {

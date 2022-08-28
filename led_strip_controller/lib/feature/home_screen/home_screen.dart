@@ -60,6 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   onTap: _toggleBluetooth,
                   onDoubleTap: () => _setPrimaryController(SerialControllers.bluetooth),
+                  onLongPress: _removeLastBluetoothMac,
                   onTapCancel: _removePrimaryController,
                 ),
                 InkWell(
@@ -297,6 +298,15 @@ class _HomeScreenState extends State<HomeScreen> {
       _showSnackBar('Removed primary controller');
     } else {
       _showSnackBar('There is already no primary controller');
+    }
+  }
+
+  void _removeLastBluetoothMac() {
+    if (Memory().getLastBluetoothMac() != null) {
+      Memory().removeLastBluetoothMac();
+      _showSnackBar('Removed last Bluetooth MAC address');
+    } else {
+      _showSnackBar('There is already no Bluetooth MAC address');
     }
   }
 
