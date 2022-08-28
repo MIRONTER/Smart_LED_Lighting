@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
+import 'package:led_strip_controller/util/memory.dart';
 import 'package:usb_serial/usb_serial.dart';
 
 enum SerialControllers {usb, bluetooth}
@@ -59,6 +60,7 @@ class UsbController extends SerialController {
        await _port!.setRTS(true);
        await _port!.setPortParameters(_baudRate, UsbPort.DATABITS_8, UsbPort.STOPBITS_1, UsbPort.PARITY_NONE);
        isConnected.value = true;
+       Memory().setLastController(SerialControllers.usb);
       }
     }
   }
@@ -95,14 +97,15 @@ class UsbController extends SerialController {
 }
 
 class BluetoothController extends SerialController {
-  static const _controllerMAC = '20:16:05:20:21:47';
-
   BluetoothConnection? _connection;
 
   @override
   Future<void> connect() async {
-    _connection = await BluetoothConnection.toAddress(_controllerMAC);
+    var mac = Memory().getLastBluetoothMac();
+    if (mac == null) return;
+    _connection = await BluetoothConnection.toAddress(mac);
     isConnected.value = true;
+    Memory().setLastController(SerialControllers.bluetooth);
   }
 
   @override

@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:led_strip_controller/feature/home_screen/home_screen.dart';
+import 'package:led_strip_controller/util/memory.dart';
 
 void main() => runApp(LEDBottomLightingController());
 
 class LEDBottomLightingController extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    Memory().init().then((_) => null);
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     return MaterialApp(
       title: 'LED Strip Controller',
