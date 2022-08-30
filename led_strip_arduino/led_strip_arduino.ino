@@ -49,9 +49,9 @@ void setup() {
 void loop() {
   if (millis() - lastChange > changePeriodMilliseconds && autoSwitch) {
     if (enableAutoStaticEffects) {
-      currentLightMode = random(0, 21);
+      currentLightMode = random(1, 22);
     } else {
-      currentLightMode = random(0, 12);
+      currentLightMode = random(1, 13);
     }
     changeLightMode(currentLightMode);
     lastChange = millis();
