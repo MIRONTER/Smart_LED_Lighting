@@ -22,27 +22,29 @@ class _HomeScreenState extends State<HomeScreen> {
   LightMode _currentMode = LightMode.rainbowWave;
   late SerialController _serialController;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
+  ValueNotifier<bool> _isConnected = ValueNotifier(false);
 
   @override
   void initState() {
     super.initState();
     var controllerType = Memory().getPrimaryController() ?? Memory().getLastController() ?? SerialControllers.usb;
     _serialController = SerialController.choose(controllerType);
-    _serialController.connect();
     _serialController.isConnected.addListener(_connectionListener);
+    _serialController.connect();
   }
 
   @override
   void dispose() {
-    _serialController.disconnect();
     _serialController.isConnected.removeListener(_connectionListener);
+    _isConnected.dispose();
+    _serialController.isConnected.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
-      valueListenable: _serialController.isConnected,
+      valueListenable: _isConnected,
       builder: (BuildContext context, bool isConnected, __) {
         return ScaffoldMessenger(
           child: Scaffold(
@@ -217,7 +219,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _toggleStrip(bool isOn) async {
-    if (!_serialController.isConnected.value) await _serialController.connect();
+    if (!_isConnected.value) await _serialController.connect();
     setState(() => _ledStripOn = isOn);
     if (_brightness == 0) _brightness = 128;
     _serialController.changeBrightness(isOn ? _brightness : 0);
@@ -256,6 +258,7 @@ class _HomeScreenState extends State<HomeScreen> {
       _serialController.toggleConnection();
     } else {
       _serialController.disconnect();
+      _isConnected.value = false;
       _serialController.isConnected.removeListener(_connectionListener);
       _serialController = SerialController.choose(SerialControllers.bluetooth);
       _serialController.isConnected.addListener(_connectionListener);
@@ -268,6 +271,7 @@ class _HomeScreenState extends State<HomeScreen> {
       _serialController.toggleConnection();
     } else {
       _serialController.disconnect();
+      _isConnected.value = false;
       _serialController.isConnected.removeListener(_connectionListener);
       _serialController = SerialController.choose(SerialControllers.usb);
       _serialController.isConnected.addListener(_connectionListener);
@@ -276,7 +280,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _connectionListener() {
-    if (_serialController.isConnected.value) {
+    var isConnected = _serialController.isConnected.value;
+    _isConnected.value = isConnected;
+    if (isConnected) {
       _showSnackBar('${_serialController is UsbController ? 'USB' : 'Bluetooth'} connected');
     } else {
       _showSnackBar('${_serialController is UsbController ? 'USB' : 'Bluetooth'} disconnected');
