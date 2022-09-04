@@ -25,5 +25,15 @@ I am using an Arduino Nano, which has 30720 bytes of available flash memory and 
 
 There are 148 LEDs in my strip. One LED consumes 6 bytes of SRAM.
 
+## Android app features
+- USB and Bluetooth connection - single tap on a controller button to connect
+- Switching between all the supported modes
+- Controlling brightness
+- Toggling automatic switch (including switching on and off static modes)
+- Controlling period of automatic switch
+- Memorizing last controller type
+- Memorizing last Bluetooth MAC address - long press Bluetooth button to forget last MAC
+- Setting primary controller (app will try to connect to it on startup, ignoring last used controller) - double tap on a controller butoon on the top of the screen to set one as primary, swipe from a button to reset primary controller
+
 ## Scheme
 ![SCHEME](https://github.com/chapsan2001/smart_led_lighting/blob/master/scheme.png)
