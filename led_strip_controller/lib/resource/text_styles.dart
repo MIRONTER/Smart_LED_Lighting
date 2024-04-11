@@ -38,6 +38,13 @@ class TextStyles {
 
   static const regular = TextStyle(
     fontFamily: 'Ubuntu',
+    fontSize: 18,
+    fontWeight: FontWeight.w400,
+    color: Colors.white,
+  );
+
+  static const gaugeButton = TextStyle(
+    fontFamily: 'Ubuntu',
     fontSize: 14,
     fontWeight: FontWeight.w400,
     color: Colors.white,

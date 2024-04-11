@@ -1,12 +1,10 @@
-import 'package:led_strip_controller/feature/home_screen/widget/bluetooth_dialog.dart';
 import 'package:led_strip_controller/feature/home_screen/widget/effect_card.dart';
 import 'package:led_strip_controller/feature/home_screen/light_mode.dart';
-import 'package:led_strip_controller/util/memory.dart';
+import 'package:led_strip_controller/feature/home_screen/widget/tap_gauge.dart';
 import 'package:led_strip_controller/util/serial_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:led_strip_controller/resource/text_styles.dart';
 import 'package:led_strip_controller/util/strip_settings.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -20,15 +18,14 @@ class _HomeScreenState extends State<HomeScreen> {
   int _brightness = 128;
   int _changePeriodSeconds = 300;
   LightMode _currentMode = LightMode.rainbowWave;
-  late SerialController _serialController;
+  late UsbController _serialController;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
   ValueNotifier<bool> _isConnected = ValueNotifier(false);
 
   @override
   void initState() {
     super.initState();
-    var controllerType = Memory().getPrimaryController() ?? Memory().getLastController() ?? SerialControllers.usb;
-    _serialController = SerialController.choose(controllerType);
+    _serialController = UsbController();
     _serialController.isConnected.addListener(_connectionListener);
     _serialController.connect();
   }
@@ -51,146 +48,121 @@ class _HomeScreenState extends State<HomeScreen> {
             key: _scaffoldKey,
             appBar: AppBar(
               title: Text('LED Strip Controller', style: TextStyles.appBar),
-              actions: [
-                InkWell(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                    child: Icon(
-                      Icons.bluetooth,
-                      color: (isConnected && _serialController is BluetoothController) ? Colors.green : Colors.red
-                    ),
-                  ),
-                  onTap: _toggleBluetooth,
-                  onDoubleTap: () => _setPrimaryController(SerialControllers.bluetooth),
-                  onLongPress: _removeLastBluetoothMac,
-                  onTapCancel: _removePrimaryController,
-                ),
-                InkWell(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                    child: Icon(
-                      Icons.usb,
-                      color: (isConnected && _serialController is UsbController) ? Colors.green : Colors.red
-                    ),
-                  ),
-                  onTap: _toggleUsb,
-                  onDoubleTap: () => _setPrimaryController(SerialControllers.usb),
-                  onTapCancel: _removePrimaryController,
-                ),
-              ],
-            ),
-            body: Scrollbar(
-              thickness: 3,
-              child: SingleChildScrollView(
+              centerTitle: true,
+              leading: InkWell(
                 child: Padding(
-                  padding: const EdgeInsets.only(left: 12, right: 12, bottom: 0, top: 24),
-                  child: Column(
-                    children: [
-                      const Divider(),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text('LED Strip', style: TextStyles.regular),
-                          Switch(
-                            value: _ledStripOn && _brightness > 0 && isConnected,
-                            onChanged: _toggleStrip,
-                            inactiveTrackColor: Color(0xFF484848),
-                            inactiveThumbColor: Color(0xFF646464),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text('Brightness', style: TextStyles.regular),
-                              Text('$_brightness/255', style: TextStyles.regular),
-                            ],
-                          ),
-                          Slider(
-                            min: 0, max: 255,
-                            value: _brightness.toDouble(),
-                            onChanged: isConnected ? _changeBrightness : null,
-                            onChangeEnd: isConnected ? (value) => _serialController.changeBrightness(value.toInt()) : null,
-                            activeColor: Colors.red,
-                            inactiveColor: Color(0xFF484848),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text('Change period', style: TextStyles.regular),
-                              Text('$_changePeriodSeconds seconds', style: TextStyles.regular),
-                            ],
-                          ),
-                          Slider(
-                            min: 30, max: 600,
-                            value: _changePeriodSeconds.toDouble(),
-                            onChanged: isConnected ? (value) => setState(() => _changePeriodSeconds = value.toInt()) : null,
-                            onChangeEnd: isConnected ? (value) => _serialController.changePeriod(value.toInt()) : null,
-                            activeColor: Colors.red,
-                            inactiveColor: Color(0xFF484848),
-                          ),
-                        ],
-                      ),
-                      const Divider(),
-                      const Padding(
-                        padding: EdgeInsets.all(8),
-                        child: Text('Modes', style: TextStyles.header),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text('Automatic Switch', style: TextStyles.regular),
-                          Switch(
-                            value: _autoSwitch,
-                            onChanged: isConnected ? _toggleAutoSwitch : null,
-                            inactiveTrackColor: Color(0xFF484848),
-                            inactiveThumbColor: Color(0xFF646464),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text('Static Effects', style: TextStyles.regular),
-                          Switch(
-                            value: _staticEffects,
-                            onChanged: isConnected ? _toggleStaticEffects : null,
-                            inactiveTrackColor: Color(0xFF484848),
-                            inactiveThumbColor: Color(0xFF646464),
-                          ),
-                        ],
-                      ),
-                      GridView.builder(
-                        padding: const EdgeInsets.only(bottom: 24),
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          childAspectRatio: 10/9,
-                          crossAxisSpacing: 8,
-                          mainAxisSpacing: 8,
-                        ),
-                        itemCount: LightMode.values.length,
-                        itemBuilder: (context, index) {
-                          var mode = LightMode.values[index];
-                          return EffectCard(
-                            lightMode: mode,
-                            isSelected: _currentMode == mode && !_autoSwitch && isConnected,
-                            onTap: isConnected ? () => _selectEffect(mode) : null,
-                          );
-                        },
-                      )
-                    ],
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                  child: Icon(Icons.usb,
+                      color: (isConnected) ? Colors.green : Colors.red),
                 ),
+                onTap: _toggleUsb,
+              ),
+            ),
+            body: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Row(
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text('LED Strip', style: TextStyles.regular),
+                            Switch(
+                              value:
+                                  _ledStripOn && _brightness > 0 && isConnected,
+                              onChanged: _toggleStrip,
+                              inactiveTrackColor: Color(0xFF484848),
+                              inactiveThumbColor: Color(0xFF646464),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text('Automatic Switch',
+                                style: TextStyles.regular),
+                            Switch(
+                              value: _autoSwitch,
+                              onChanged: isConnected ? _toggleAutoSwitch : null,
+                              inactiveTrackColor: Color(0xFF484848),
+                              inactiveThumbColor: Color(0xFF646464),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text('Static Effects',
+                                style: TextStyles.regular),
+                            Switch(
+                              value: _staticEffects,
+                              onChanged:
+                                  isConnected ? _toggleStaticEffects : null,
+                              inactiveTrackColor: Color(0xFF484848),
+                              inactiveThumbColor: Color(0xFF646464),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text('Brightness', style: TextStyles.regular),
+                            TapGauge(
+                              value: _brightness,
+                              min: 0,
+                              max: 255,
+                              onChange: isConnected ? _changeBrightness : null,
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text('Change period',
+                                style: TextStyles.regular),
+                            TapGauge(
+                              value: _changePeriodSeconds,
+                              min: 30,
+                              max: 600,
+                              onChange: isConnected ? _changePeriod : null,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    flex: 3,
+                    child: GridView.builder(
+                      padding: const EdgeInsets.only(bottom: 24),
+                      shrinkWrap: true,
+                      physics: const BouncingScrollPhysics(),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 3,
+                        childAspectRatio: 10 / 9,
+                        crossAxisSpacing: 12,
+                        mainAxisSpacing: 12,
+                      ),
+                      itemCount: LightMode.values.length,
+                      itemBuilder: (context, index) {
+                        var mode = LightMode.values[index];
+                        return EffectCard(
+                          lightMode: mode,
+                          isSelected: _currentMode == mode &&
+                              !_autoSwitch &&
+                              isConnected,
+                          onTap: isConnected ? () => _selectEffect(mode) : null,
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -207,15 +179,23 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  void _changeBrightness(double brightness) {
+  void _changePeriod(int period) {
     setState(() {
-      _brightness = brightness.toInt();
+      _changePeriodSeconds = period;
+    });
+    _serialController.changePeriod(period);
+  }
+
+  void _changeBrightness(int brightness) {
+    setState(() {
+      _brightness = brightness;
       if (_brightness == 0) {
         _ledStripOn = false;
       } else {
         _ledStripOn = true;
       }
     });
+    _serialController.changeBrightness(brightness);
   }
 
   void _toggleStrip(bool isOn) async {
@@ -235,90 +215,22 @@ class _HomeScreenState extends State<HomeScreen> {
     _serialController.toggleAutoSwitch(isOn);
   }
 
-  void _toggleBluetooth() async {
-    await Permission.bluetoothScan.request();
-    await Permission.bluetoothConnect.request();
-    String? mac = Memory().getLastBluetoothMac();
-    if (mac == null) {
-      mac = await showDialog(
-        context: context,
-        barrierColor: Colors.black.withOpacity(0.75),
-        builder: (context) {
-          return const BluetoothDialog();
-        }
-      );
-      if (mac != null) {
-        Memory().setLastBluetoothMac(mac);
-      } else {
-        _showSnackBar('Bluetooth device was not selected');
-        return;
-      }
-    }
-    if (_serialController is BluetoothController) {
-      _serialController.toggleConnection();
-    } else {
-      _serialController.disconnect();
-      _isConnected.value = false;
-      _serialController.isConnected.removeListener(_connectionListener);
-      _serialController = SerialController.choose(SerialControllers.bluetooth);
-      _serialController.isConnected.addListener(_connectionListener);
-      await _serialController.connect();
-    }
-  }
-
   void _toggleUsb() async {
-    if (_serialController is UsbController) {
-      _serialController.toggleConnection();
-    } else {
-      _serialController.disconnect();
-      _isConnected.value = false;
-      _serialController.isConnected.removeListener(_connectionListener);
-      _serialController = SerialController.choose(SerialControllers.usb);
-      _serialController.isConnected.addListener(_connectionListener);
-      await _serialController.connect();
-    }
+    _serialController.toggleConnection();
   }
 
   void _connectionListener() {
     var isConnected = _serialController.isConnected.value;
     _isConnected.value = isConnected;
     if (isConnected) {
-      _showSnackBar('${_serialController is UsbController ? 'USB' : 'Bluetooth'} connected');
+      _showSnackBar('USB connected');
     } else {
-      _showSnackBar('${_serialController is UsbController ? 'USB' : 'Bluetooth'} disconnected');
+      _showSnackBar('USB disconnected');
       _currentMode = LightMode.rainbowWave;
       _brightness = 128;
       _changePeriodSeconds = 300;
       _autoSwitch = true;
       _staticEffects = false;
-    }
-  }
-
-  void _setPrimaryController(SerialControllers controller) {
-    var currentPrimaryController = Memory().getPrimaryController();
-    if (controller != currentPrimaryController) {
-      Memory().setPrimaryController(controller);
-      _showSnackBar('Set ${controller == SerialControllers.usb ? 'USB' : 'Bluetooth'} as primary controller');
-    } else {
-      _showSnackBar('${controller == SerialControllers.usb ? 'USB' : 'Bluetooth'} is already a primary controller');
-    }
-  }
-
-  void _removePrimaryController() {
-    if (Memory().getPrimaryController() != null) {
-      Memory().removePrimaryController();
-      _showSnackBar('Removed primary controller');
-    } else {
-      _showSnackBar('There is already no primary controller');
-    }
-  }
-
-  void _removeLastBluetoothMac() {
-    if (Memory().getLastBluetoothMac() != null) {
-      Memory().removeLastBluetoothMac();
-      _showSnackBar('Removed last Bluetooth MAC address');
-    } else {
-      _showSnackBar('There is already no Bluetooth MAC address');
     }
   }
 

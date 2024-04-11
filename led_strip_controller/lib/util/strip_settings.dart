@@ -1,7 +1,7 @@
 import 'package:led_strip_controller/feature/home_screen/light_mode.dart';
 import 'package:led_strip_controller/util/serial_controller.dart';
 
-extension StripSettings on SerialController {
+extension StripSettings on UsbController {
   void changeBrightness(int brightness) => sendCommand('b$brightness');
 
   void changePeriod(int period) => sendCommand('c$period');
