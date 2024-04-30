@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:led_strip_controller/feature/home_screen/home_screen.dart';
+import 'package:led_strip_controller/home_screen/home_screen.dart';
+import 'package:led_strip_controller/styles/app_theme.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,18 +14,7 @@ class LEDStripController extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'LED Strip Controller',
-      theme: ThemeData(
-        appBarTheme: AppBarTheme(
-          elevation: 0,
-          toolbarHeight: 40,
-          color: Colors.black,
-        ),
-        primaryColor: Colors.black,
-        scaffoldBackgroundColor: Colors.black,
-        toggleableActiveColor: Colors.red,
-        dividerColor: Colors.white,
-        colorScheme: ColorScheme.fromSwatch().copyWith(secondary: Colors.red),
-      ),
+      theme: AppTheme().themeData,
       home: HomeScreen(),
     );
   }

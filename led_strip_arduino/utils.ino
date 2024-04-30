@@ -1,3 +1,5 @@
+boolean changeFlag;
+
 void setPixel(int i, byte red, byte green, byte blue) {
   ledStrip[i].r = red;
   ledStrip[i].g = green;
@@ -13,8 +15,4 @@ boolean safeDelay(int delTime) {
     }
   }
   return 0;
-}
-
-double getWaveBrightness(int index, int subIndex) {
-  return (sin((subIndex + index)/3) * 127 + 128) / 255;
 }

@@ -1,14 +1,36 @@
-import 'package:led_strip_controller/feature/home_screen/light_mode.dart';
+import 'dart:ui';
+
+import 'package:led_strip_controller/util/light_mode.dart';
 import 'package:led_strip_controller/util/serial_controller.dart';
+import 'package:led_strip_controller/util/settings_storage.dart';
 
-extension StripSettings on UsbController {
-  void changeBrightness(int brightness) => sendCommand('b$brightness');
+class StripSettings {
+  StripSettings(this._controller);
 
-  void changePeriod(int period) => sendCommand('c$period');
+  final UsbController _controller;
 
-  void changeMode(LightMode mode) => sendCommand('m${mode.getCode()}');
+  Future<void> changeBaseColor(Color color) {
+    final r = color.red.toString().padLeft(3, '0');
+    final g = color.green.toString().padLeft(3, '0');
+    final b = color.blue.toString().padLeft(3, '0');
+    return Future.wait([
+      _controller.sendCommand('c$r$g$b'),
+      SettingsStorage.instance.setColor(color),
+    ]);
+  }
 
-  void toggleAutoSwitch(bool autoSwitch) => sendCommand('a${autoSwitch ? 1 : 0}');
+  Future<void> changeMode(LightMode mode) {
+    return Future.wait([
+      _controller.sendCommand('m${mode.code}'),
+      SettingsStorage.instance.setMode(mode),
+    ]);
+  }
 
-  void toggleStaticEffects(bool staticEffects) => sendCommand('s${staticEffects ? 1 : 0}');
+  Future<void> toggleAutoSwitch(bool autoSwitch) {
+    return Future.wait([
+      _controller.sendCommand('a${autoSwitch ? 1 : 0}'),
+      SettingsStorage.instance.setAutoSwitch(autoSwitch),
+      SettingsStorage.instance.clearMode(),
+    ]);
+  }
 }
